@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "447068443896",
+    "project_id": "dsm-firebase-auth-953df",
+    "storage_bucket": "dsm-firebase-auth-953df.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447068443896:android:3da4527496aeffc50c570d",
+        "android_client_info": {
+          "package_name": "com.dsm.miniplayer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgLkJcd8Da_Wvj-fgq-wqYCchv2779220"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
