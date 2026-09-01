@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.dsm.miniplayer.ui.screens.initial.InitialScreen
 import com.dsm.miniplayer.ui.screens.login.LoginScreen
+import com.dsm.miniplayer.ui.screens.signup.SignUpScreen
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -30,7 +31,9 @@ fun NavigationWrapper(
         }
 
         composable("signUp") {
-            // SignUpScreen()
+            SignUpScreen(auth,
+                onLogin={navHostController.navigate("logIn")}
+            )
         }
 
         composable("home") {
