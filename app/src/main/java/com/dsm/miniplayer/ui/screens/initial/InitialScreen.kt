@@ -36,8 +36,8 @@ import com.dsm.miniplayer.ui.theme.ShapeButton
 import com.dsm.miniplayer.ui.theme.White
 
 @Composable
-fun InitialScreen(navigateToLogin: () -> Unit = {},
-                  navigateToSignUp: () -> Unit = {}){
+fun InitialScreen(onLogin: () -> Unit = {},
+                  onSignUp: () -> Unit = {}){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -62,7 +62,7 @@ fun InitialScreen(navigateToLogin: () -> Unit = {},
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick = { navigateToSignUp()},
+            onClick = { onSignUp()},
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
@@ -86,7 +86,7 @@ fun InitialScreen(navigateToLogin: () -> Unit = {},
             color = White,
             modifier = Modifier
                 .padding(24.dp)
-                .clickable { navigateToLogin()},
+                .clickable { onLogin()},
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.weight(1f))
