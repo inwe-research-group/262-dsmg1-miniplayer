@@ -134,6 +134,7 @@ fun SignUpScreen(auth: FirebaseAuth, onLogin: () -> Unit = {}){
                     if (task.isSuccessful) {
                         val user = task.result?.user
                         Log.d("AUTH", "Usuario creado: ${user?.email}")
+                        onLogin()
                     } else {
                         Log.e("AUTH", "Error: ${task.exception?.message}")
                     }

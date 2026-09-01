@@ -48,7 +48,7 @@ import com.dsm.miniplayer.ui.theme.White
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}) {
+fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}, onToHome: () -> Unit = {}) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -139,6 +139,7 @@ fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}) {
                     if (task.isSuccessful) {
                         val user = task.result?.user
                         Log.d("AUTH", "Login correcto: ${user?.email}")
+                        onToHome()
                     } else {
                         Log.e("AUTH", "Error: ${task.exception?.message}")
                     }
