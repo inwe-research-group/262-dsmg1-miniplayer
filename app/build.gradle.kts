@@ -49,6 +49,8 @@ dependencies {
     //componente de navegacion de rutas
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 
     //iconos extendidos de material3
     implementation("androidx.compose.material:material-icons-core")
