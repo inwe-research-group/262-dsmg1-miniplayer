@@ -14,20 +14,25 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,11 +48,30 @@ import com.dsm.miniplayer.ui.theme.White
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun SignUpScreen(auth: FirebaseAuth, onLogin: () -> Unit = {}){
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+fun SignUpScreen(
+    viewModel: SignUpViewModel,
+    onLogin: () -> Unit = {}
+)
+{
+    val signUpState by viewModel.signUpState.collectAsState()
+    // FocusRequester para navegación de enfoque entre campos
+    val emailFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
 
+    if (signUpState.showDialog) {
+        val shouldRedirect = signUpState.success || signUpState.redirectToLogin
+        ResultDialog(
+            success = signUpState.success,
+            message = signUpState.message,
+            onDismiss = {
+                viewModel.dismissDialog()
+                if (shouldRedirect) {
+                    onLogin()
+                }
+            }
+        )
+    }
+    //diseño de elementos IU
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,11 +97,12 @@ fun SignUpScreen(auth: FirebaseAuth, onLogin: () -> Unit = {}){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextField(
-                value = email,
-                onValueChange = { email = it },
+                value = signUpState.email,
+                onValueChange = { viewModel.onEmailChanged(it) },
                 placeholder = { Text(stringResource(R.string.login_email), color = Gray) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .focusRequester(emailFocusRequester),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = White,
                     unfocusedTextColor = White,
@@ -92,11 +117,12 @@ fun SignUpScreen(auth: FirebaseAuth, onLogin: () -> Unit = {}){
             Spacer(modifier = Modifier.height(24.dp))
 
             TextField(
-                value = password,
-                onValueChange = { password = it },
+                value = signUpState.password,
+                onValueChange = { viewModel.onPasswordChanged(it)},
                 placeholder = { Text(stringResource(R.string.login_password), color = Gray) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .focusRequester(passwordFocusRequester),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = White,
                     unfocusedTextColor = White,
@@ -106,13 +132,13 @@ fun SignUpScreen(auth: FirebaseAuth, onLogin: () -> Unit = {}){
                     focusedIndicatorColor = Green,
                     unfocusedIndicatorColor = Gray
                 ),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (signUpState.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
-                    val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                    val description = if (passwordVisible) stringResource(R.string.login_password_ocultar) else stringResource(R.string.login_password_mostrar)
+                    val image = if (signUpState.passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    val description = if (signUpState.passwordVisible) stringResource(R.string.login_password_ocultar) else stringResource(R.string.login_password_mostrar)
 
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    IconButton(onClick = { viewModel.onPasswordVisibilityToggled() }) {
                         Icon(
                             imageVector = image,
                             contentDescription = description,
@@ -128,17 +154,8 @@ fun SignUpScreen(auth: FirebaseAuth, onLogin: () -> Unit = {}){
         //Botón verde tipo Spotify
         Button(
             onClick = {
-                Log.d("AUTH", "Parametros: $email")
-                Log.d("AUTH", "Parametros: $password")
-                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val user = task.result?.user
-                        Log.d("AUTH", "Usuario creado: ${user?.email}")
-                        onLogin()
-                    } else {
-                        Log.e("AUTH", "Error: ${task.exception?.message}")
-                    }
-                }
+                viewModel.signUp()
+                Log.d("SignUpScreen", "SignUpSubmitted: ${signUpState.email}")
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -152,4 +169,20 @@ fun SignUpScreen(auth: FirebaseAuth, onLogin: () -> Unit = {}){
         Spacer(modifier = Modifier.height(16.dp))
     }
 
+}
+@Composable
+fun ResultDialog(success: Boolean, message: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        onDismissRequest = onDismiss,
+        title = { Text(if (success) "Registro exitoso" else "Error") },
+        text = { Text(message) },
+        confirmButton = {
+            Button(
+                onClick = onDismiss
+            ) {
+                Text("OK")
+            }
+        }
+    )
 }
