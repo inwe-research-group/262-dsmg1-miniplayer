@@ -105,5 +105,9 @@ class LoginViewModel : ViewModel() {
         _loginState.update { it.copy(passwordVisible = !it.passwordVisible) }
     }
 
+    fun resetForm() {
+        _loginState.value = LoginState()
+    }
+
 
 }

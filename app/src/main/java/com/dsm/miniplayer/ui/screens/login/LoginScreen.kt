@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,9 @@ fun LoginScreen(viewModel: LoginViewModel,
                 onToHome: () -> Unit = {}) {
 
     val loginState by viewModel.loginState.collectAsState()
+
+    LaunchedEffect(Unit) {viewModel.resetForm()}
+
     val context = LocalContext.current
     // FocusRequester para manejar el enfoque entre los campos
     val emailFocusRequester = remember { FocusRequester() }

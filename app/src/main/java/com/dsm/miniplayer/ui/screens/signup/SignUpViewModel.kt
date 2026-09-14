@@ -77,6 +77,10 @@ class SignUpViewModel : ViewModel() {
     fun onPasswordVisibilityToggled() {
         _signUpState.update { it.copy(passwordVisible = !it.passwordVisible) }
     }
+
+    fun resetForm() {
+        _signUpState.value = SignUpState()
+    }
     private fun translateMessage(message: String): String {
         return when {
             message.contains("already in use", ignoreCase = true) || message.contains("ALREADY_IN_USE", ignoreCase = true) ->
