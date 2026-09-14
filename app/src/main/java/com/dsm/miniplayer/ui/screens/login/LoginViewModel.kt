@@ -86,6 +86,24 @@ class LoginViewModel : ViewModel() {
             else -> message
         }
     }
+    fun dismissDialog() {
+        _loginState.update { it.copy(showDialog = false) }
+    }
+    fun onEmailChanged(email: String) {
+        _loginState.update { state ->
+            state.copy(usuarioSession = state.usuarioSession.copy(email = email))
+        }
+    }
+
+    fun onPasswordChanged(password: String) {
+        _loginState.update { state ->
+            state.copy(usuarioSession = state.usuarioSession.copy(password = password))
+        }
+    }
+
+    fun onPasswordVisibilityToggled() {
+        _loginState.update { it.copy(passwordVisible = !it.passwordVisible) }
+    }
 
 
 }

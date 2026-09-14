@@ -15,21 +15,27 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -48,10 +54,30 @@ import com.dsm.miniplayer.ui.theme.White
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}, onToHome: () -> Unit = {}) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+fun LoginScreen(viewModel: LoginViewModel,
+                onSignUp: () -> Unit = {},
+                onToHome: () -> Unit = {}) {
+
+    val loginState by viewModel.loginState.collectAsState()
+    val context = LocalContext.current
+    // FocusRequester para manejar el enfoque entre los campos
+    val emailFocusRequester = remember { FocusRequester() }
+    val passwordFocusRequester = remember { FocusRequester() }
+
+    if (loginState.showDialog) {
+        ResultDialog(
+            success = loginState.success,
+            message = loginState.message,
+            onDismiss = {
+                val wasSuccess = loginState.success
+                viewModel.dismissDialog()
+                if (wasSuccess) {
+                    onToHome()
+                }
+            }
+        )
+    }
+
 
     Column(
         modifier = Modifier
@@ -78,11 +104,12 @@ fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}, onToHome: () -> U
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextField(
-                value = email,
-                onValueChange = { email = it },
+                value = loginState.usuarioSession.email,
+                onValueChange = { viewModel.onEmailChanged(it)  },
                 placeholder = { Text(stringResource(R.string.login_email), color = Gray) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .focusRequester(emailFocusRequester),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = White,
                     unfocusedTextColor = White,
@@ -97,11 +124,12 @@ fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}, onToHome: () -> U
             Spacer(modifier = Modifier.height(24.dp))
 
             TextField(
-                value = password,
-                onValueChange = { password = it },
+                value = loginState.usuarioSession.password,
+                onValueChange = { viewModel.onPasswordChanged(it) },
                 placeholder = { Text(stringResource(R.string.login_password), color = Gray) },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .focusRequester(passwordFocusRequester),
                 colors = TextFieldDefaults.colors(
                     focusedTextColor = White,
                     unfocusedTextColor = White,
@@ -111,13 +139,13 @@ fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}, onToHome: () -> U
                     focusedIndicatorColor = Green,
                     unfocusedIndicatorColor = Gray
                 ),
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                visualTransformation = if (loginState.passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 trailingIcon = {
-                    val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                    val description = if (passwordVisible) stringResource(R.string.login_password_ocultar) else stringResource(R.string.login_password_mostrar)
+                    val image = if (loginState.passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    val description = if (loginState.passwordVisible) stringResource(R.string.login_password_ocultar) else stringResource(R.string.login_password_mostrar)
 
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    IconButton(onClick = { viewModel.onPasswordVisibilityToggled() }) {
                         Icon(
                             imageVector = image,
                             contentDescription = description,
@@ -133,17 +161,8 @@ fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}, onToHome: () -> U
         //Botón verde tipo Spotify
         Button(
             onClick = {
-                Log.d("AUTH", "Parametros: $email")
-                Log.d("AUTH", "Parametros: $password")
-                auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val user = task.result?.user
-                        Log.d("AUTH", "Login correcto: ${user?.email}")
-                        onToHome()
-                    } else {
-                        Log.e("AUTH", "Error: ${task.exception?.message}")
-                    }
-                }
+                viewModel.login()
+                Log.d("LoginScreen", "Intento de inicio de sesión para el email: ${loginState.usuarioSession.email}")
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -180,4 +199,20 @@ fun LoginScreen(auth: FirebaseAuth, onSignUp: () -> Unit = {}, onToHome: () -> U
 
     }
 
+}
+@Composable
+fun ResultDialog(success: Boolean, message: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
+        onDismissRequest = onDismiss,
+        title = { Text(if (success) "Inicio de sesión" else "Mensaje") },
+        text = { Text(message) },
+        confirmButton = {
+            Button(
+                onClick = onDismiss
+            ) {
+                Text("OK")
+            }
+        }
+    )
 }
