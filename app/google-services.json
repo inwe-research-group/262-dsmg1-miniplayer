@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "447068443896",
+    "firebase_url": "https://dsm-firebase-auth-953df-default-rtdb.firebaseio.com",
     "project_id": "dsm-firebase-auth-953df",
     "storage_bucket": "dsm-firebase-auth-953df.firebasestorage.app"
   },
