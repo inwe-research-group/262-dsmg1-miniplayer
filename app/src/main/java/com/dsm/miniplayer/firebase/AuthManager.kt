@@ -4,6 +4,7 @@ import android.util.Log
 import com.dsm.firebaseauth.data.model.Usuario
 import com.dsm.firebaseauth.data.model.UsuarioSesion
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
 
 object AuthManager {
@@ -64,6 +65,26 @@ object AuthManager {
                     }
                 } else {
                     callback(false, task.exception?.message ?: "Error al iniciar sesión.")
+                }
+            }
+    }
+
+    fun signInWithGoogle(idToken: String, googleId: String? = null, callback: (Boolean, String) -> Unit) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    val uid = user?.uid ?: ""
+                    val email = user?.email ?: ""
+
+                    Log.d(AuthManager.TAG, "Google Sign-In exitoso para: $email (uid=$uid)")
+
+                    callback(true, "Inicio de sesión con Google exitoso.")
+                } else {
+                    val errorMsg = task.exception?.message ?: "Error al iniciar sesión con Google."
+                    Log.e(AuthManager.TAG, "Google Sign-In falló: $errorMsg")
+                    callback(false, errorMsg)
                 }
             }
     }

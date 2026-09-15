@@ -109,5 +109,34 @@ class LoginViewModel : ViewModel() {
         _loginState.value = LoginState()
     }
 
+    fun signInWithGoogle(idToken: String, googleId: String? = null) {
+        _loginState.update { it.copy(isLoading = true) }
+        AuthManager.signInWithGoogle(idToken, googleId) { success, message ->
+            if (success) {
+                // Login con Google exitoso: navegar directo sin diálogo de confirmación
+                _loginState.update {
+                    it.copy(
+                        success = true,
+                        message = message,
+                        showDialog = false,
+                        googleLoginSuccess = true,
+                        isLoading = false
+                    )
+                }
+            } else {
+                // Error: mostrar diálogo con el mensaje de error
+                _loginState.update {
+                    it.copy(
+                        success = false,
+                        message = message,
+                        showDialog = true,
+                        googleLoginSuccess = false,
+                        isLoading = false
+                    )
+                }
+            }
+        }
+    }
+
 
 }
