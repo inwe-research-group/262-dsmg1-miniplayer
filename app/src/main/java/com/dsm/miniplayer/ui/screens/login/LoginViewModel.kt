@@ -138,5 +138,10 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    //Inicio de sesión con Google gestionado
+    fun onGoogleLoginHandled() {
+        _loginState.update { it.copy(googleLoginSuccess = false) }
+    }
+
 
 }

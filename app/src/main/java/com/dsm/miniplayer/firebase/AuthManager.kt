@@ -44,6 +44,11 @@ object AuthManager {
                 }
             }
     }
+
+    fun getAuthInstance(): FirebaseAuth {
+        return auth
+    }
+
     //funcion para inicio de sesion
     fun login(email: String, password: String, callback: (Boolean, String) -> Unit) {
         auth.signInWithEmailAndPassword(email, password)
