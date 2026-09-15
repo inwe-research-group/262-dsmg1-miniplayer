@@ -51,6 +51,8 @@ dependencies {
     implementation(libs.coil)
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.converter.gson)
+    implementation(libs.play.services.auth)
 
     //iconos extendidos de material3
     implementation("androidx.compose.material:material-icons-core")

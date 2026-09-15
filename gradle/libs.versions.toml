@@ -13,6 +13,8 @@ googleGmsGoogleServices = "4.4.2"
 navigationCompose = "2.8.4"
 coil = "2.7.0"
 koin = "3.5.6"
+converterGson = "2.9.0"
+playServicesAuth = "21.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +37,8 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 coil = {module = "io.coil-kt:coil-compose", version.ref = "coil"}
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 
 # Firebase (sin versión, usa BOM)
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
