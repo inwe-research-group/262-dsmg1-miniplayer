@@ -3,6 +3,7 @@ package com.dsm.miniplayer
 import android.app.Application
 import android.util.Log
 import com.dsm.miniplayer.di.loginModule
+import com.dsm.miniplayer.di.musicModule
 import com.dsm.miniplayer.di.signUpModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -20,7 +21,8 @@ class MiniPlayerApp: Application() {
                 modules(
                     listOf(
                         loginModule,
-                        signUpModule
+                        signUpModule,
+                        musicModule
                     )
                 )
             }
