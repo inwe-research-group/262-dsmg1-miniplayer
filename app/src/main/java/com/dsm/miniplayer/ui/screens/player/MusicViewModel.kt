@@ -22,6 +22,10 @@ class MusicViewModel(private val repo: MusicRepository) : ViewModel(){
 
     private var mediaPlayer: MediaPlayer? = null
 
+    init {
+        loadSongs()
+    }
+
     private fun loadSongs() {
         viewModelScope.launch {
             try {

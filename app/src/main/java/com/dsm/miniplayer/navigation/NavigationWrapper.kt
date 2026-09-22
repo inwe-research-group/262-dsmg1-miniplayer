@@ -8,6 +8,7 @@ import com.dsm.miniplayer.ui.screens.home.HomeScreen
 import com.dsm.miniplayer.ui.screens.initial.InitialScreen
 import com.dsm.miniplayer.ui.screens.login.LoginScreen
 import com.dsm.miniplayer.ui.screens.login.LoginViewModel
+import com.dsm.miniplayer.ui.screens.player.MusicScreen
 import com.dsm.miniplayer.ui.screens.signup.SignUpScreen
 import com.dsm.miniplayer.ui.screens.signup.SignUpViewModel
 import com.google.firebase.auth.FirebaseAuth
@@ -47,7 +48,14 @@ fun NavigationWrapper(
         }
 
         composable("home") {
-            HomeScreen()
+            //HomeScreen()
+            MusicScreen(
+                onInitial = {
+                    navHostController.navigate("initial") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
