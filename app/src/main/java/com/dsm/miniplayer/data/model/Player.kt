@@ -1,4 +1,4 @@
-package com.dsm.firebaseauth.data.model
+package com.dsm.miniplayer.data.model
 
 data class Player(
     val currentSongIndex: Int = -1,//val currentSongId: String = "",

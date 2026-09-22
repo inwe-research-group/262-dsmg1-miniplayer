@@ -1,4 +1,4 @@
-package com.dsm.firebaseauth.data.model
+package com.dsm.miniplayer.data.model
 
 data class Song(
     val artistId: Int = 0,

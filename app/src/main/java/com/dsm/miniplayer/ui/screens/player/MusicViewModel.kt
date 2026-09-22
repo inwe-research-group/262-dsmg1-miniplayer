@@ -5,16 +5,17 @@ import android.media.MediaPlayer
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dsm.firebaseauth.data.model.Player
-import com.dsm.firebaseauth.data.model.Song
+import com.dsm.miniplayer.data.model.Player
+import com.dsm.miniplayer.data.model.Song
+import com.dsm.miniplayer.data.model.SongWithArtist
 import com.dsm.miniplayer.data.repository.MusicRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MusicViewModel(private val repo: MusicRepository) : ViewModel(){
-    private val _songs = MutableStateFlow<List<Song>>(emptyList())
-    val songs: StateFlow<List<Song>> = _songs
+    private val _songs = MutableStateFlow<List<SongWithArtist>>(emptyList())
+    val songs: StateFlow<List<SongWithArtist>> = _songs
 
     private val _player = MutableStateFlow<Player?>(null)
     //Crea un flujo observable que puede contener un Player o null, iniciando en null.
@@ -29,7 +30,7 @@ class MusicViewModel(private val repo: MusicRepository) : ViewModel(){
     private fun loadSongs() {
         viewModelScope.launch {
             try {
-                val newSongs = repo.getSongs()
+                val newSongs = repo.getSongsWithArtists()
                 Log.d("MusicViewModel", "Loaded songs: $newSongs")
 
                 if (_songs.value != newSongs) // solo si realmente cambia
@@ -46,7 +47,7 @@ class MusicViewModel(private val repo: MusicRepository) : ViewModel(){
     fun playSongAt(index: Int) {
         if (index !in _songs.value.indices) return
         val song = _songs.value[index]
-        if (song.url.isBlank()) {
+        if (song.song.url.isBlank()) {
             Log.e("MusicViewModel", "Song URL is empty for index $index")
             return
         }
@@ -58,7 +59,7 @@ class MusicViewModel(private val repo: MusicRepository) : ViewModel(){
         stopSong()
 
         try {
-            val cleanUrl = song.url.trim()
+            val cleanUrl = song.song.url.trim()
             mediaPlayer = MediaPlayer().apply {
                 setAudioAttributes(
                     AudioAttributes.Builder()
@@ -94,7 +95,7 @@ class MusicViewModel(private val repo: MusicRepository) : ViewModel(){
                 prepareAsync()
             }
         } catch (e: Exception) {
-            Log.e("MusicViewModel", "Error setting data source for song ${song.title}: ${e.message}", e)
+            Log.e("MusicViewModel", "Error setting data source for song ${song.song.title}: ${e.message}", e)
             stopSong()
             val newPlayer = _player.value?.copy(isPlaying = false) ?: Player(currentSongIndex = index, isPlaying = false)
             _player.value = newPlayer

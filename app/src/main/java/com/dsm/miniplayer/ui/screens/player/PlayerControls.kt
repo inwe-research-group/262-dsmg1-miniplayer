@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import com.dsm.firebaseauth.data.model.Song
+import com.dsm.miniplayer.data.model.Song
 
 @Composable
 fun PlayerControls(
