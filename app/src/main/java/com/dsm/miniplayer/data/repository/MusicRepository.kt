@@ -3,7 +3,7 @@ package com.dsm.miniplayer.data.repository
 import com.dsm.miniplayer.data.model.Artist
 import com.dsm.miniplayer.data.model.Player
 import com.dsm.miniplayer.data.model.Song
-import com.dsm.miniplayer.data.model.SongWithArtist
+import com.dsm.miniplayer.data.model.SongArtist
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -32,7 +32,7 @@ class MusicRepository {
         return snapshot.documents.mapNotNull { it.toObject(Artist::class.java) }
     }
 
-    suspend fun getSongsWithArtists(): List<SongWithArtist> = coroutineScope {
+    suspend fun getSongsWithArtists(): List<SongArtist> = coroutineScope {
         val songsDeferred = async { getSongs() }
         val artistsDeferred = async { getArtists() }
 
@@ -40,7 +40,7 @@ class MusicRepository {
         val artistsMap = artistsDeferred.await().associateBy { it.artistId }
 
         songs.map { song ->
-            SongWithArtist(
+            SongArtist(
                 song = song,
                 artist = artistsMap[song.artistId]
             )

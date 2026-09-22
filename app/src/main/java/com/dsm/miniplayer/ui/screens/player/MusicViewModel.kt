@@ -6,16 +6,15 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dsm.miniplayer.data.model.Player
-import com.dsm.miniplayer.data.model.Song
-import com.dsm.miniplayer.data.model.SongWithArtist
+import com.dsm.miniplayer.data.model.SongArtist
 import com.dsm.miniplayer.data.repository.MusicRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MusicViewModel(private val repo: MusicRepository) : ViewModel(){
-    private val _songs = MutableStateFlow<List<SongWithArtist>>(emptyList())
-    val songs: StateFlow<List<SongWithArtist>> = _songs
+    private val _songs = MutableStateFlow<List<SongArtist>>(emptyList())
+    val songs: StateFlow<List<SongArtist>> = _songs
 
     private val _player = MutableStateFlow<Player?>(null)
     //Crea un flujo observable que puede contener un Player o null, iniciando en null.
